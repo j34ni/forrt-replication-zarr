@@ -1,9 +1,53 @@
-# forrt-replication-zarr
+# forrt-replication-zarr-consistency
 
-> Does Icechunk's atomic metadata+data commit eliminate the consistency failures
-> that plague disconnected STAC-style metadata indexes over object storage? — replication study.
+## In plain language
+
+**The question:** if you store your array data (Zarr) in one place and keep a
+*separate* index describing it (e.g. a STAC catalog) somewhere else, can a reader
+ever see the two disagree — say, right after a crash, or when two jobs update the
+same dataset at once?
+
+**The answer this replication finds:** with a separate index, yes — we observed it
+in all four situations we tested. With **Icechunk**, which writes the array data and
+its metadata together in a single atomic transaction, no — it was never observed
+inconsistent, in any of the four situations, including on real cloud object storage.
+
+**At a glance — what breaks, and where:**
+
+| What happens | Separate index (STAC/JSON + Zarr) | Icechunk |
+|---|---|---|
+| Crash mid-update (data written, catalog not yet) | ❌ catalog describes the wrong data, until a cleanup job runs | ✅ nothing changes until the update fully completes |
+| Crash mid-update (catalog written, data not yet) | ❌ catalog points at data that isn't there | ✅ all-or-nothing — this failure mode doesn't exist |
+| A reader arrives mid-update | ❌ can see a half-updated mix | ✅ always sees the last fully-committed version |
+| Two jobs write the same data at once | ❌ one silently overwrites the other | ✅ the store rejects the second write — no silent loss |
+
+> **Should you use Icechunk?** If your datasets are written once and never changed, a
+> separate metadata index is fine — there's nothing that can get out of sync. But if
+> they're *updated over time* — and especially if more than one process can write —
+> a disconnected index can be caught in an inconsistent state, and avoiding that takes
+> extra machinery you'd have to build and maintain yourself. A transactional store
+> like Icechunk gives you that safety by construction: in our tests it was never
+> observed inconsistent, across all four situations, on real cloud object storage.
 >
-> Question-rooted chain (no upstream paper): primary source is the [`zarr-datafusion-search`](https://github.com/developmentseed/zarr-datafusion-search) README by Development Seed.
+> **The one caveat that matters:** this depends on the underlying object store
+> supporting **conditional writes** — informally, "refuse a write if someone else
+> changed the data first," the same idea as a wiki refusing to save your edit because
+> someone else's landed first (also called *compare-and-swap*, or CAS). Icechunk's
+> guarantee is only as strong as that. We confirmed it holds on NIRD/Sigma2; other
+> S3-compatible providers should behave the same, but weren't tested here.
+
+The full plain-language walkthrough — what F1–F4 mean as everyday stories, how to
+read the results figure, and the technical replication design — is in
+[`notebooks/01_atomic_sync.py`](notebooks/01_atomic_sync.py) (rendered as the first
+notebook in this Jupyter Book's table of contents).
+
+---
+
+> **Replication framing:** does Icechunk's atomic metadata+data commit eliminate the
+> consistency failures that plague disconnected STAC-style metadata indexes over
+> object storage? Question-rooted chain (no upstream paper): the primary source is the
+> [`zarr-datafusion-search`](https://github.com/developmentseed/zarr-datafusion-search)
+> README by Development Seed.
 
 This repository is a self-contained replication of the headline claim surfaced by the reference source above. It produces:
 
@@ -14,8 +58,8 @@ This repository is a self-contained replication of the headline claim surfaced b
 ## Quick start
 
 ```bash
-git clone https://github.com/j34ni/forrt-replication-zarr.git
-cd forrt-replication-zarr
+git clone https://github.com/j34ni/forrt-replication-zarr-consistency.git
+cd forrt-replication-zarr-consistency
 pixi install
 pixi run snakemake --cores 1
 ```
@@ -23,7 +67,7 @@ pixi run snakemake --cores 1
 Or with Docker:
 
 ```bash
-docker run --rm ghcr.io/j34ni/forrt-replication-zarr:latest
+docker run --rm ghcr.io/j34ni/forrt-replication-zarr-consistency:latest
 ```
 
 ## Structure

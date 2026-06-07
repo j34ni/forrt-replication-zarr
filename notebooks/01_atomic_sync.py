@@ -16,17 +16,45 @@
 # %% [markdown]
 # # 01 — Atomic synchronization: fault-injection consistency test
 #
-# **Claim under test:** Icechunk-backed transactional stores produce zero observable
-# metadata–data inconsistencies under writer failure and concurrent access, whereas
-# disconnected STAC metadata indexes over object storage produce such inconsistencies
-# without external orchestration.
+# ## In plain language
+#
+# **The question:** if your array data (Zarr) lives in one place and a *separate*
+# index describing it (e.g. a STAC catalog) lives somewhere else, can the two ever
+# disagree — say, right after a crash, or when two jobs write at the same time?
+#
+# **The answer this notebook produces the evidence for:** with a separate index, yes
+# — every one of the four situations below produced an observable mismatch, every
+# time we ran it. With **Icechunk**, which commits the array data and its metadata
+# together as a single atomic transaction, no mismatch was ever observed — in any of
+# the four situations, including against a real cloud object store.
+#
+# **The four situations, as everyday stories:**
+#
+# | Code name | What it tests (technical) | What it means in practice |
+# |---|---|---|
+# | **F1** | crash *after* the data is written, *before* the catalog is updated | Your script crashes partway through a routine update. The new data is sitting on disk, but the catalog still describes the *old* version — so anyone reading the catalog right now gets pointed at data that has since changed underneath them. |
+# | **F2** | crash *after* the catalog is updated, *before* the data is written | Your script crashes the other way around. The catalog now promises a version of the data that doesn't exist on disk yet — a reader following it hits something missing or wrong. |
+# | **F3** | a reader arrives while a write is still in progress | Someone opens the dataset *while* you're halfway through updating it. They don't cleanly get "the old version" or "the new version" — they can see a mix: new data paired with the old description, or vice versa. |
+# | **F4** | two writers racing to update the same data at the same time | Two jobs — two pipeline runs, or you and a colleague — update the same dataset at once. Without protection, one silently overwrites the other and the loser's work just vanishes: no error, no warning, no trace. |
+#
+# **Claim under test (technical):** Icechunk-backed transactional stores produce zero
+# observable metadata–data inconsistencies under writer failure and concurrent access,
+# whereas disconnected STAC metadata indexes over object storage produce such
+# inconsistencies without external orchestration.
 #
 # **Method:** A fault-injection harness generates synthetic Zarr arrays carrying a
-# SHA-256 checksum attribute. A consistency checker recomputes the checksum from data
-# and compares. Faults are injected at specific points in the write sequence across
-# three scenarios (F1, F2, F3) for three systems (Icechunk, STAC B0, STAC B1).
+# SHA-256 checksum attribute. A consistency checker recomputes the checksum from the
+# data and compares it against the checksum recorded in the metadata — a mismatch is
+# an observable inconsistency. Faults are injected at specific points in the write
+# sequence across four scenarios (F1-F4) for three systems (Icechunk, STAC B0 "naive",
+# STAC B1 "best-effort with a cleanup sweeper"), on a local-filesystem backend and a
+# real S3-compatible object store (NIRD/Sigma2).
 #
-# **Status:** written, untested — results cells will be populated on first run.
+# **Status:** executed. The results below come from a real run — 1000 trials per
+# scenario × system on the local-filesystem backend, plus 100 trials per scenario for
+# Icechunk against the NIRD/Sigma2 object store (the environment where the
+# conditional-write/CAS guarantee actually matters; see Section 3). The numbers are
+# also reported in `nanopubs/drafts/05_outcome.md`.
 
 # %% [markdown]
 # ## 0. Environment check
@@ -231,6 +259,42 @@ fig.suptitle(
 fig.tight_layout()
 fig.savefig("../figures/main_result.png", dpi=150, bbox_inches="tight")
 plt.show()
+
+# %% [markdown]
+# ### How to read this figure, in plain language
+#
+# Every bar is a count of *observable inconsistencies* out of N independent trials —
+# lower is better, and 0 means "never seen to break, in this many tries."
+#
+# - **Panels 1 and 3 (F1, F3 — local filesystem):** Icechunk stays at 0. Both STAC
+#   variants land at N — i.e. *every single trial* produced a detectable mismatch
+#   between the catalog and the data.
+# - **Panel 1 (F1), STAC B1's two bars — read this one carefully:** the left
+#   ("pre-sweep") bar shows N out of N trials inconsistent — exactly as broken as
+#   B0 at the moment of the crash. The right ("post-sweep") bar drops to 0 *only
+#   because a separate cleanup job (the "sweeper") ran afterwards and fixed it up*.
+#   **This is not "B1 solves F1."** It means: *broken at first, repaired later by a
+#   cleanup sweep — and in between, there is a real window during which anyone who
+#   reads the catalog sees data that doesn't match what it claims.* How long that
+#   window stays open depends entirely on how often you remember to run the sweeper.
+#   Icechunk has no such window, because there is nothing to sweep: the data and its
+#   description either land together or not at all.
+# - **Panel 2 (F2 — local filesystem):** the hatched STAC B1 bar at 0 is *not* the
+#   same kind of "win" as Icechunk's 0. It means "we checked, and B1's particular
+#   write order happens to avoid this one failure mode" — a property of how B1
+#   orders its writes, not a guarantee enforced by the storage layer. Change the
+#   write order (or the system that writes), and the protection can disappear. F1
+#   and F3 still break it regardless.
+# - **Panel 4 (NIRD/Sigma2 — real cloud object store, Icechunk only):** this is
+#   the panel that matters most for "does the guarantee hold for real, on the kind
+#   of storage people actually use?" F1-F3 read 0, confirming the same all-or-nothing
+#   behaviour holds off of a local disk. **F4 is the decisive bar pair**: the green
+#   `conflict_rejected` bar landing at 100/100 means that *every single time* two
+#   writers raced for the same update, the object store itself refused the loser's
+#   write outright — nothing was silently overwritten, and the `inconsistent` bar
+#   stays at 0. That refusal is the conditional-write / compare-and-swap guarantee
+#   (see the "should you use Icechunk?" box above) working exactly as advertised,
+#   measured against a real S3-compatible endpoint rather than assumed.
 
 # %% [markdown]
 # ## 4. B1 sweeper detail: pre- vs post-sweep inconsistencies (F1 only)
