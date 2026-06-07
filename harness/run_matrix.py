@@ -7,7 +7,7 @@ Usage:
 
     # include MinIO backend (set env vars first):
     export MINIO_ENDPOINT=https://s3.nird.sigma2.no
-    export MINIO_BUCKET=jeani-ns1000k-grid4earth
+    export MINIO_BUCKET=<your-bucket-name>
     export MINIO_PREFIX=icechunk-atomicity-test
     export MINIO_ACCESS_KEY=<key>
     export MINIO_SECRET_KEY=<secret>

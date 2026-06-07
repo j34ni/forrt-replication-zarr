@@ -1,10 +1,11 @@
-# {{REPO_NAME}}
+# forrt-replication-zarr
 
-> **{{PAPER_TITLE}}** — replication study.
+> Does Icechunk's atomic metadata+data commit eliminate the consistency failures
+> that plague disconnected STAC-style metadata indexes over object storage? — replication study.
 >
-> Reference paper: [{{PAPER_DOI}}](https://doi.org/{{PAPER_DOI}})
+> Question-rooted chain (no upstream paper): primary source is the [`zarr-datafusion-search`](https://github.com/developmentseed/zarr-datafusion-search) README by Development Seed.
 
-This repository is a self-contained replication of the headline claim from the reference paper above. It produces:
+This repository is a self-contained replication of the headline claim surfaced by the reference source above. It produces:
 
 - A reproducible computational pipeline (Snakefile + notebooks).
 - A FORRT-tagged nanopublication chain on the [Science Live platform](https://platform.sciencelive4all.org), documenting the claim, the replication design, and the outcome with full provenance.
@@ -13,8 +14,8 @@ This repository is a self-contained replication of the headline claim from the r
 ## Quick start
 
 ```bash
-git clone https://github.com/{{REPO_ORG}}/{{REPO_NAME}}.git
-cd {{REPO_NAME}}
+git clone https://github.com/j34ni/forrt-replication-zarr.git
+cd forrt-replication-zarr
 pixi install
 pixi run snakemake --cores 1
 ```
@@ -22,12 +23,12 @@ pixi run snakemake --cores 1
 Or with Docker:
 
 ```bash
-docker run --rm ghcr.io/{{REPO_ORG}}/{{REPO_NAME}}:latest
+docker run --rm ghcr.io/j34ni/forrt-replication-zarr:latest
 ```
 
 ## Structure
 
-- `paper/` — the source paper PDF (drop yours in there).
+- `paper/` — source-paper PDF dir (unused — this is a question-rooted chain; see `paper/README.md`).
 - `notebooks/` — jupytext `.py` notebooks that drive the pipeline.
 - `data/` — downloaded by `notebooks/01_data_download.py`, never committed.
 - `nanopubs/` — drafts of the FORRT chain field-by-field, plus the published-URI registry.
@@ -43,4 +44,4 @@ The published chain is listed in [`nanopubs/PUBLISHED.md`](nanopubs/PUBLISHED.md
 If you use this work, please cite both:
 
 - This software: [`CITATION.cff`](CITATION.cff) → DOI [{{ZENODO_DOI}}]({{ZENODO_DOI}}).
-- The original paper: [{{PAPER_DOI}}](https://doi.org/{{PAPER_DOI}}).
+- The primary source (no DOI — a GitHub README, not a publication): [`zarr-datafusion-search`](https://github.com/developmentseed/zarr-datafusion-search) by Development Seed.

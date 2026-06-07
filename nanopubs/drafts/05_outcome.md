@@ -7,7 +7,7 @@
 > (icechunk 2.0.6, zarr 3.2.1, seed=42). The matrix covers two backends: local filesystem
 > (1000 trials × F1/F2/F3/F4 × {icechunk, stac_b0, stac_b1} — STAC baselines are not
 > exercised under F4, which is Icechunk-specific) and a real object-store backend — NIRD/Sigma2
-> S3-compatible storage (`s3.nird.sigma2.no`, bucket `jeani-ns1000k-grid4earth`, 100 trials ×
+> S3-compatible storage (`s3.nird.sigma2.no`, a private project bucket, 100 trials ×
 > F1/F2/F3/F4, Icechunk only — the STAC baseline result is backend-agnostic by construction;
 > see `harness/run_matrix.py`). Do not edit these numbers without re-running the matrix.
 >
@@ -194,8 +194,8 @@ not empirical hit probability.
 
   Backend 1 — local filesystem: 1000 trials per scenario per system for F1/F2/F3
   (icechunk, stac_b0, stac_b1) and 1000 trials of F4 (icechunk only), seed=42.
-  Backend 2 — NIRD/Sigma2 S3-compatible object store (`s3.nird.sigma2.no`, bucket
-  `jeani-ns1000k-grid4earth`, prefix `icechunk-atomicity-test/<run_id>/`): 100 trials per
+  Backend 2 — NIRD/Sigma2 S3-compatible object store (`s3.nird.sigma2.no`, a private
+  project bucket, prefix `icechunk-atomicity-test/<run_id>/`): 100 trials per
   scenario for F1/F2/F3/F4, Icechunk only, seed=43. (The STAC baseline is not re-run on
   the object store: its inconsistency is a structural property of the disconnected
   two-step write, not of the storage layer — see `harness/run_matrix.py` for the
@@ -355,7 +355,7 @@ for the claim: local filesystem is explicitly documented by Icechunk as a
 development/testing convenience, not the production target.
 
 Test repos created on NIRD during this run (under
-`jeani-ns1000k-grid4earth/icechunk-atomicity-test/<run_id>/`) are left in the bucket —
+`icechunk-atomicity-test/<run_id>/` in the project's private bucket) are left in place —
 no automatic cleanup is performed by the harness (see `harness/run_matrix.py`).
 ```
 

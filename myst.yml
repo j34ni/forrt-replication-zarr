@@ -1,12 +1,12 @@
 version: 1
 project:
-  title: "{{REPO_NAME}}"
+  title: "forrt-replication-zarr"
   authors:
-    - name: "{{AUTHOR_NAME}}"
-      orcid: "{{AUTHOR_ORCID}}"
+    - name: "Jean Iaquinta"
+      orcid: "https://orcid.org/0000-0002-8763-1643"
       affiliations:
-        - "{{AUTHOR_AFFILIATION}}"
-  github: https://github.com/{{REPO_ORG}}/{{REPO_NAME}}
+        - "VitenHub AS (Norway)"
+  github: https://github.com/j34ni/forrt-replication-zarr
   license: MIT
   toc:
     - file: index.md
@@ -16,7 +16,7 @@ project:
     - file: notebooks/04_figures.ipynb
     - file: nanopubs/README.md
 site:
-  title: "{{REPO_NAME}}"
+  title: "forrt-replication-zarr"
 # IMPORTANT: do NOT set base_url here — MyST silently ignores the key.
 # BASE_URL is set in .github/workflows/jupyter-book.yml as an env var on the
 # `myst build` step, derived from the GitHub repo name. See

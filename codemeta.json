@@ -1,13 +1,13 @@
 {
   "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
   "@type": "SoftwareSourceCode",
-  "name": "{{REPO_NAME}}",
-  "description": "{{REPO_DESCRIPTION}}",
+  "name": "forrt-replication-zarr",
+  "description": "Fault-injection replication testing whether Icechunk-backed transactional Zarr stores eliminate the metadata-data inconsistencies that affect disconnected STAC-style metadata indexes over object storage, including a positive control for the conditional-write/CAS guarantee on a real S3-compatible object store (NIRD/Sigma2).",
   "version": "0.1.0",
   "dateCreated": "{{RELEASE_DATE}}",
   "dateModified": "{{RELEASE_DATE}}",
   "license": "https://spdx.org/licenses/MIT",
-  "codeRepository": "https://github.com/{{REPO_ORG}}/{{REPO_NAME}}",
+  "codeRepository": "https://github.com/j34ni/forrt-replication-zarr",
   "identifier": "{{ZENODO_DOI}}",
   "@id": "{{ZENODO_DOI}}",
   "programmingLanguage": {
@@ -19,12 +19,12 @@
   "author": [
     {
       "@type": "Person",
-      "givenName": "{{AUTHOR_GIVEN}}",
-      "familyName": "{{AUTHOR_FAMILY}}",
-      "@id": "{{AUTHOR_ORCID}}",
+      "givenName": "Jean",
+      "familyName": "Iaquinta",
+      "@id": "https://orcid.org/0000-0002-8763-1643",
       "affiliation": {
         "@type": "Organization",
-        "name": "{{AUTHOR_AFFILIATION}}"
+        "name": "VitenHub AS (Norway)"
       }
     }
   ],
@@ -36,10 +36,12 @@
     "Science-Live"
   ],
   "referencePublication": {
-    "@type": "ScholarlyArticle",
-    "name": "{{PAPER_TITLE}}",
-    "datePublished": "{{PAPER_YEAR}}",
-    "@id": "https://doi.org/{{PAPER_DOI}}"
+    "@type": "CreativeWork",
+    "name": "zarr-datafusion-search README — Synchronization",
+    "author": { "@type": "Organization", "name": "Development Seed" },
+    "datePublished": "2026",
+    "url": "https://github.com/developmentseed/zarr-datafusion-search",
+    "description": "Question-rooted chain: no upstream paper. This GitHub README is the primary citable source of the headline claim under test (no DOI — see nanopubs/drafts/00_paper_summary.md)."
   },
   "isPartOf": {
     "@type": "Organization",

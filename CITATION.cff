@@ -1,13 +1,13 @@
 cff-version: 1.2.0
-title: "{{REPO_NAME}}"
+title: "forrt-replication-zarr"
 message: "If you use this software, please cite it as below."
 type: software
 authors:
-  - family-names: "{{AUTHOR_FAMILY}}"
-    given-names: "{{AUTHOR_GIVEN}}"
-    orcid: "{{AUTHOR_ORCID}}"
-    affiliation: "{{AUTHOR_AFFILIATION}}"
-repository-code: "https://github.com/{{REPO_ORG}}/{{REPO_NAME}}"
+  - family-names: "Iaquinta"
+    given-names: "Jean"
+    orcid: "https://orcid.org/0000-0002-8763-1643"
+    affiliation: "VitenHub AS (Norway)"
+repository-code: "https://github.com/j34ni/forrt-replication-zarr"
 license: MIT
 version: "0.1.0"
 date-released: "{{RELEASE_DATE}}"
@@ -25,23 +25,13 @@ keywords:
   - nanopublication
   - Science-Live
 references:
-  - type: article
-    title: "{{PAPER_TITLE}}"
-    authors:
-      - family-names: "{{PAPER_AUTHOR_FAMILY}}"
-        given-names: "{{PAPER_AUTHOR_GIVEN}}"
-    year: "{{PAPER_YEAR}}"
-    doi: "{{PAPER_DOI}}"
-  # Prior FORRT chain this replication extends or qualifies. The URI below
-  # is the canonical persistent pointer to the prior constellation; the
-  # imported summary itself (CHAIN_SUMMARY.md, constellation.json, cached
-  # TriG) is regenerated on demand via `/import-from-nanopub <URL>` and
-  # lives in the gitignored `nanopubs/imported/` directory.
-  #
-  # If your replication does NOT extend a prior chain, init-template
-  # removes this entry. If it does, init-template substitutes the URI
-  # and description below from your responses.
+  # This is a question-rooted chain — no upstream paper makes the claim under test.
+  # The primary citable source is a public README, not an article with a DOI; see
+  # nanopubs/drafts/00_paper_summary.md for the verbatim claim sentence and context.
   - type: generic
-    title: "{{PRIOR_CHAIN_DESCRIPTION}}"
-    url: "{{PRIOR_CHAIN_URI}}"
-    notes: "Apex CiTO Citation of the prior FORRT chain this replication extends. Re-run `/import-from-nanopub <URL>` to repopulate nanopubs/imported/ locally."
+    title: "zarr-datafusion-search README — Synchronization"
+    authors:
+      - name: "Development Seed"
+    year: "2026"
+    url: "https://github.com/developmentseed/zarr-datafusion-search"
+    notes: "Source of the headline claim under test (Icechunk atomic metadata/data commits vs. disconnected STAC-style metadata stores). No DOI: this is a GitHub README, not a publication."

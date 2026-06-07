@@ -5,7 +5,7 @@ Supported backends: local filesystem, MinIO (S3-compatible).
 
 MinIO configuration via environment variables:
   MINIO_ENDPOINT    e.g. https://s3.nird.sigma2.no
-  MINIO_BUCKET      e.g. jeani-ns1000k-grid4earth
+  MINIO_BUCKET      your private bucket name (no default — must be set)
   MINIO_PREFIX      e.g. icechunk-atomicity-test   (dedicated test prefix — never touches other data)
   MINIO_ACCESS_KEY  your access key
   MINIO_SECRET_KEY  your secret key
@@ -31,7 +31,7 @@ def minio_icechunk_repo(prefix: str) -> icechunk.Repository:
     HTTPS is used (allow_http=False); force_path_style=True for MinIO compatibility.
     """
     endpoint = os.environ["MINIO_ENDPOINT"].rstrip("/")
-    bucket = os.environ.get("MINIO_BUCKET", "jeani-ns1000k-grid4earth")
+    bucket = os.environ["MINIO_BUCKET"]
     base_prefix = os.environ.get("MINIO_PREFIX", "icechunk-atomicity-test")
     access_key = os.environ["MINIO_ACCESS_KEY"]
     secret_key = os.environ["MINIO_SECRET_KEY"]
@@ -55,7 +55,7 @@ def minio_icechunk_repo(prefix: str) -> icechunk.Repository:
 
 def minio_env_set() -> bool:
     """True if the required MinIO env vars are present."""
-    return all(k in os.environ for k in ("MINIO_ENDPOINT", "MINIO_ACCESS_KEY", "MINIO_SECRET_KEY"))
+    return all(k in os.environ for k in ("MINIO_ENDPOINT", "MINIO_BUCKET", "MINIO_ACCESS_KEY", "MINIO_SECRET_KEY"))
 
 
 def probe_minio() -> tuple[bool, str]:

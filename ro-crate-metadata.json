@@ -14,12 +14,12 @@
     {
       "@id": "./",
       "@type": ["Dataset", "ResearchObject"],
-      "name": "{{REPO_NAME}}",
-      "description": "{{REPO_DESCRIPTION}}",
+      "name": "forrt-replication-zarr",
+      "description": "Fault-injection replication testing whether Icechunk-backed transactional Zarr stores eliminate the metadata-data inconsistencies that affect disconnected STAC-style metadata indexes over object storage, including a positive control for the conditional-write/CAS guarantee on a real S3-compatible object store (NIRD/Sigma2).",
       "datePublished": "{{RELEASE_DATE}}",
       "license": { "@id": "https://spdx.org/licenses/MIT" },
-      "publisher": { "@id": "{{AUTHOR_ORCID}}" },
-      "author": [{ "@id": "{{AUTHOR_ORCID}}" }],
+      "publisher": { "@id": "https://orcid.org/0000-0002-8763-1643" },
+      "author": [{ "@id": "https://orcid.org/0000-0002-8763-1643" }],
       "mainEntity": { "@id": "Snakefile" },
       "hasPart": [
         { "@id": "Snakefile" },
@@ -37,14 +37,14 @@
         { "@id": "nanopubs/PUBLISHED.md" }
       ],
       "citation": [
-        { "@id": "https://doi.org/{{PAPER_DOI}}" }
+        { "@id": "https://github.com/developmentseed/zarr-datafusion-search" }
       ]
     },
     {
-      "@id": "{{AUTHOR_ORCID}}",
+      "@id": "https://orcid.org/0000-0002-8763-1643",
       "@type": "Person",
-      "name": "{{AUTHOR_NAME}}",
-      "affiliation": "{{AUTHOR_AFFILIATION}}"
+      "name": "Jean Iaquinta",
+      "affiliation": "VitenHub AS (Norway)"
     },
     {
       "@id": "Snakefile",
@@ -106,7 +106,7 @@
     {
       "@id": "paper/",
       "@type": "Dataset",
-      "name": "Source paper PDF (drop yours here)"
+      "name": "Source paper PDF directory (not used — this is a question-rooted chain; see paper/README.md)"
     },
     {
       "@id": "data/",
@@ -130,10 +130,12 @@
       "description": "URIs of the published Quote / AIDA / FORRT Claim / Replication Study / Replication Outcome / CiTO Citation steps."
     },
     {
-      "@id": "https://doi.org/{{PAPER_DOI}}",
-      "@type": "ScholarlyArticle",
-      "name": "{{PAPER_TITLE}}",
-      "datePublished": "{{PAPER_YEAR}}"
+      "@id": "https://github.com/developmentseed/zarr-datafusion-search",
+      "@type": "CreativeWork",
+      "name": "zarr-datafusion-search README — Synchronization",
+      "author": "Development Seed",
+      "datePublished": "2026",
+      "description": "Question-rooted chain: no upstream paper. This GitHub README is the primary citable source of the headline claim under test (no DOI — see nanopubs/drafts/00_paper_summary.md)."
     }
   ]
 }

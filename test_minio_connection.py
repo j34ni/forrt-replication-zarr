@@ -1,7 +1,7 @@
 """Standalone MinIO connection test — run with: pixi run python test_minio_connection.py
 
-Requires MINIO_ENDPOINT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY (and optionally
-MINIO_BUCKET, defaulting to jeani-ns1000k-grid4earth) in the environment.
+Requires MINIO_ENDPOINT, MINIO_BUCKET, MINIO_ACCESS_KEY, MINIO_SECRET_KEY
+in the environment.
 """
 import os
 
@@ -10,7 +10,7 @@ import numpy as np
 import zarr
 
 storage = icechunk.s3_storage(
-    bucket=os.environ.get("MINIO_BUCKET", "jeani-ns1000k-grid4earth"),
+    bucket=os.environ["MINIO_BUCKET"],
     prefix="icechunk-atomicity-test/_connection-test",
     endpoint_url=os.environ["MINIO_ENDPOINT"],
     allow_http=False,
