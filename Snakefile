@@ -1,9 +1,11 @@
 # Snakefile — orchestrates the replication pipeline end-to-end.
 #
-# Replace the placeholder rules with your actual replication steps. The
-# canonical pattern is one rule per pipeline stage, and each rule wraps a
-# notebook executed via jupytext (so the notebook stays the source of truth
-# and the Snakefile just sequences them).
+# This replication is a fault-injection harness, not a data-analysis pipeline:
+# there is no external dataset to download/clean — the harness (harness/) generates
+# synthetic Zarr arrays and injects faults into Icechunk- and STAC-backed stores.
+# The whole pipeline therefore lives in one notebook, 01_atomic_sync.py, which
+# runs the fault matrix (via harness.run_matrix.run_all), writes the results
+# table, and renders the comparison figure.
 #
 # Usage:
 #   snakemake --cores 1                  # run everything
@@ -11,54 +13,24 @@
 
 NOTEBOOKS = "notebooks"
 DATA = "data"
-RESULTS = "results"
 FIGURES = "figures"
 
 
 rule all:
     input:
-        # Replace with your actual final artefacts:
         f"{FIGURES}/main_result.png",
-        f"{RESULTS}/summary.csv",
+        f"{DATA}/results/results.parquet",
 
 
-# ---------- 01: Data download ----------
-# Every replication MUST be self-contained: data is downloaded by the notebook,
-# never assumed to exist locally. See CLAUDE.md § Self-contained data.
-rule data_download:
+# ---------- 01: Atomic synchronization fault-injection matrix + figure ----------
+# Runs F1-F3 (and, with MINIO_* env vars set, F1-F4) across Icechunk / STAC B0 / B1,
+# writes data/results/results.parquet, and renders figures/main_result.png.
+# See harness/run_matrix.py and notebooks/01_atomic_sync.py for the full design.
+rule atomic_sync:
     output:
-        f"{DATA}/raw/dataset.zip",
+        f"{FIGURES}/main_result.png",
+        f"{DATA}/results/results.parquet",
     log:
-        f"{RESULTS}/logs/01_data_download.log",
+        "results/logs/01_atomic_sync.log",
     shell:
-        f"cd {{NOTEBOOKS}} && jupytext --to notebook --execute 01_data_download.py 2>&1 | tee ../{{log}}"
-
-
-# ---------- 02: Data clean ----------
-rule data_clean:
-    input:
-        f"{DATA}/raw/dataset.zip",
-    output:
-        f"{DATA}/clean/dataset.parquet",
-    shell:
-        f"cd {{NOTEBOOKS}} && jupytext --to notebook --execute 02_data_clean.py"
-
-
-# ---------- 03: Analysis ----------
-rule analysis:
-    input:
-        f"{DATA}/clean/dataset.parquet",
-    output:
-        f"{RESULTS}/summary.csv",
-    shell:
-        f"cd {{NOTEBOOKS}} && jupytext --to notebook --execute 03_analysis.py"
-
-
-# ---------- 04: Figures ----------
-rule figures:
-    input:
-        f"{RESULTS}/summary.csv",
-    output:
-        f"{FIGURES}/main_result.png",
-    shell:
-        f"cd {{NOTEBOOKS}} && jupytext --to notebook --execute 04_figures.py"
+        f"cd {{NOTEBOOKS}} && jupytext --to notebook --execute 01_atomic_sync.py 2>&1 | tee ../{{log}}"

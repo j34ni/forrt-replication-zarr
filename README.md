@@ -66,7 +66,7 @@ After `/init-template`, do these one-time setup steps to enable the full CI/CD p
 ├── myst.yml + index.md         # Jupyter Book scaffold
 ├── paper/                      # source-paper PDF dir (unused — question-rooted chain, see paper/README.md)
 ├── data/                       # downloaded artefacts (gitignored)
-├── notebooks/                  # jupytext .py pipeline (01–04)
+├── notebooks/                  # jupytext .py pipeline (single fault-injection notebook — see notebooks/README.md)
 ├── nanopubs/                   # FORRT chain drafts + published-URI registry
 ├── docs/                       # reference material
 ├── figures/                    # curated figures used in the Jupyter Book

@@ -1,36 +1,30 @@
-# `data/` — downloaded artefacts, never committed
+# `data/` — generated artefacts, never committed
 
-This directory holds the raw and cleaned datasets used by the replication pipeline. **Files in this directory are never committed to git** (`.gitignore` excludes everything except this README).
+This directory holds the results table produced by the fault-injection harness. **Files in this directory are never committed to git** (`.gitignore` excludes everything except this README — see `data/*` / `!data/README.md`).
 
-## Why download-on-first-run
+## Why there is no download step
 
-Every replication must be self-contained: a user clones the repo and runs `snakemake --cores 1` (or executes notebook 01 directly), and the code fetches its own input data. No "ask the author for the dataset" steps; no folder-of-CSVs that drift out of sync with the analysis.
+This replication does not analyse an external dataset — it tests a structural claim
+(Icechunk's atomic metadata+data commit vs. disconnected STAC-style metadata indexes)
+via fault injection on **synthetic** Zarr arrays generated on the fly by the harness
+(`harness/`). There is nothing to fetch: a user clones the repo, runs
+`snakemake --cores 1` (or executes `notebooks/01_atomic_sync.py` directly), and the
+notebook drives `harness.run_matrix.run_all()`, which generates the test data,
+injects the faults, and writes the results table here.
 
-## Where data comes from
+## What lands here
 
-The first notebook (`notebooks/01_data_download.py`) is responsible for fetching all inputs. Common patterns:
+- `data/results/results.parquet` — one row per (scenario × system × backend × trial),
+  with `inconsistent` / `conflict_rejected` columns. Written by
+  `harness.run_matrix.run_all()` (called from `notebooks/01_atomic_sync.py`).
+  Regenerable from a fresh checkout — never committed; only the summary numbers
+  (in `nanopubs/drafts/05_outcome.md`) and the rendered figure
+  (`figures/main_result.png`) are.
 
-- **Zenodo** — `requests.get(...)` against the record's file URL.
-- **GBIF** — `pygbif` to issue an occurrence download, mint a download DOI, and pin it in the notebook output.
-- **Copernicus Climate Data Store** — `cdsapi`, with credentials in `~/.cdsapirc`.
-- **Copernicus Marine Service** — `copernicusmarine`, with credentials at `~/.copernicusmarine/.copernicusmarine-credentials` (created from secrets in CI; `copernicusmarine login` is interactive only).
-- **Destination Earth** — `polytope-client` or `earthkit-data`, with DestinE Data Lake credentials.
-- **Direct URLs** — figshare, paper supplementary materials.
+## Optional MinIO/object-store backend
 
-For each dataset, record in the notebook:
-1. The exact URL or query.
-2. The DOI of the dataset (or the download DOI minted at fetch time).
-3. The license under which it is reused.
-4. Any preprocessing applied before the cleaned artefact lands in `data/clean/`.
-
-## Required credentials
-
-If your replication uses a credentialled API, document the credential setup at the top of `notebooks/01_data_download.py`, including:
-
-- Where the user gets the credential (URL).
-- Where it lives on disk (or which env var Claude expects).
-- The corresponding GitHub Actions secret name(s) for CI.
-
-## CI cache
-
-Large downloads (>100 MB) should be cached in GitHub Actions via `actions/cache@v4`. See `.github/workflows/ci.yml` for the pattern.
+Running the matrix with `--minio-trials > 0` additionally exercises a real
+S3-compatible object store (see `harness/backends.py` and `harness/run_matrix.py`
+for the required `MINIO_*` environment variables). This is optional and requires
+credentials the harness never stores — export them in your own shell, never paste
+them into a chat session.
