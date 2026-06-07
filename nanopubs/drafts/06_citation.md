@@ -25,14 +25,16 @@ TBD — paste Outcome URI after publishing step 05
 ##### Citation Type (dropdown)
 
 ```
-citesAsAuthority
+qualifies
 ```
 
-> Rationale: the prototype is the authoritative public source that states the
-> synchronization claim. We cite it as the authority from which the claim originates,
-> not as a work we are confirming or disputing. Question-rooted chains credit the source
-> at the CiTO step with `citesAsAuthority` or `usesMethodIn` rather than `confirms`
-> (which applies to paper-rooted chains where the Outcome validates a quoted claim).
+> Rationale: Validation status is PartiallySupported (local filesystem backend only;
+> MinIO / real S3 pending) → CiTO intention = `qualifies`. The prototype's claim is
+> partially supported — the mechanism works on local FS but the object-store backends
+> where the claim actually applies have not yet been tested.
+>
+> Update to `citesAsAuthority` or `confirms` once the object-store matrix is complete
+> and the result reproduces. See `05_outcome.md` publication note.
 
 ##### DOI or other URL of the cited work (text input)
 
