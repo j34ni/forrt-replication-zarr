@@ -16,7 +16,12 @@ from pathlib import Path
 
 import numpy as np
 
-from harness.invariant import check_icechunk, check_stac, compute_sha256
+from harness.invariant import (
+    check_icechunk,
+    check_stac,
+    compute_sha256,
+    icechunk_is_metadata_ahead_of_data,
+)
 from harness.baseline_stac import (
     stac_initial_write,
     stac_b0_update,
@@ -31,6 +36,7 @@ from harness.baseline_icechunk import (
     icechunk_initial_write,
     icechunk_update_abandoned,
     icechunk_read_during_write,
+    icechunk_racing_writers,
 )
 
 
@@ -92,8 +98,32 @@ def f1_stac_b1(zarr_path: str, stac_path: str, rng: np.random.Generator) -> tupl
 
 # ---------------------------------------------------------------------------
 # F2 — crash after metadata update, before data write
-# (Icechunk: not applicable — single-session atomicity prevents F2 by construction)
 # ---------------------------------------------------------------------------
+
+def f2_icechunk(repo, rng: np.random.Generator) -> bool:
+    """
+    F2-state measurement for Icechunk: runs the only crash path Icechunk has
+    (abandon a session before commit — there is no metadata-before-data write
+    order to inject a fault into, since both are written in the same session and
+    co-committed atomically), then checks whether the *committed* snapshot is
+    ever in an F2 state (attrs reference a sha256 the committed array doesn't hold).
+
+    This mirrors `f2_stac_b1`: rather than asserting "not applicable", it measures
+    the F2 *state* directly via `icechunk_is_metadata_ahead_of_data`, so a future
+    change to the write path that split metadata and data into separate commits
+    would be caught by this test flipping to True.
+
+    Returns True if metadata is ahead of data (F2 state observed) — expected: False.
+    """
+    data_v1 = _random_data(rng)
+    icechunk_initial_write(repo, data_v1)
+
+    data_v2 = _random_data(rng)
+    new_sha256 = compute_sha256(data_v2)
+    icechunk_update_abandoned(repo, data_v2)
+
+    return icechunk_is_metadata_ahead_of_data(repo, new_sha256)
+
 
 def f2_stac_b0(zarr_path: str, stac_path: str, rng: np.random.Generator) -> bool:
     """STAC B0 F2: write STAC, crash before zarr write. Expect: inconsistency."""
@@ -182,3 +212,42 @@ def f3_stac_b1(zarr_path: str, stac_path: str, rng: np.random.Generator) -> bool
     data_v2 = _random_data(rng)
     inconsistency_observed = stac_b1_mid_write_check(zarr_path, stac_path, data_v2)
     return inconsistency_observed  # expected: True
+
+
+# ---------------------------------------------------------------------------
+# F4 — concurrent writers racing for the same branch tip (Icechunk only)
+#
+# F1-F3 all pass on any storage backend because they only exercise Icechunk's
+# session commit-or-abandon model and snapshot isolation — properties of the
+# session API that hold independent of whether the underlying store supports
+# conditional writes (compare-and-swap on the branch tip). F4 is the scenario
+# that actually depends on CAS: two writers branch from the same committed tip,
+# edit the SAME region, and race to commit. The store must reject the loser's
+# stale-tip commit. This is the only scenario whose outcome on an object store
+# can differ from its outcome on a local filesystem for a structural reason
+# (POSIX rename vs. S3 conditional PUT/If-Match), which is what makes it the
+# right test to run against NIRD/Sigma2 to validate the conditional-write claim.
+# ---------------------------------------------------------------------------
+
+def f4_icechunk_racing_writers(repo, rng: np.random.Generator) -> dict:
+    """
+    F4: two sessions branch from the same committed snapshot and write to the
+    SAME array region, then both attempt to commit.
+
+    Returns a dict with two independently meaningful fields (see
+    `icechunk_racing_writers` for the full rationale):
+      - "inconsistent": the store ends in a mixed/blended state (expected: False —
+        the consistency invariant must hold regardless of which writer wins)
+      - "conflict_rejected": the second commit raised icechunk.ConflictError —
+        the positive control for the conditional-write guarantee (expected: True;
+        if this is ever False on an object store, *that* is the finding — it means
+        CAS did not protect the branch tip there)
+    """
+    data_v0 = _random_data(rng)
+    icechunk_initial_write(repo, data_v0)
+
+    data_a = _random_data(rng)
+    data_b = _random_data(rng)
+    consistent, conflict_rejected = icechunk_racing_writers(repo, data_a, data_b)
+
+    return {"inconsistent": not consistent, "conflict_rejected": conflict_rejected}

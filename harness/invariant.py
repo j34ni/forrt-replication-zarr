@@ -72,3 +72,22 @@ def stac_is_ahead_of_data(zarr_path: str, stac_path: str, candidate_sha256: str)
     with open(stac_path) as fh:
         stored: str | None = json.load(fh).get("properties", {}).get("data_sha256")
     return stored == candidate_sha256 and actual != candidate_sha256
+
+
+def icechunk_is_metadata_ahead_of_data(repo: "icechunk.Repository", candidate_sha256: str, branch: str = "main") -> bool:
+    """
+    F2-state detector for Icechunk: returns True if the last *committed* snapshot's
+    attrs reference a sha256 that the committed array does not currently contain —
+    the same "metadata ahead of data" condition `stac_is_ahead_of_data` measures for STAC.
+
+    candidate_sha256 is the sha256 of the update that was attempted. If the committed
+    attrs store that value but the committed array still holds the old data, metadata
+    is ahead of data (F2 state).
+
+    Icechunk co-commits metadata and data in a single session — there is no
+    metadata-before-data write path to crash inside, so this should always return
+    False. Measuring it (rather than asserting it) makes the result falsifiable: a
+    future change to the write path that split the commit would flip this to True.
+    """
+    consistent, stored, actual = check_icechunk(repo, branch=branch)
+    return stored == candidate_sha256 and actual != candidate_sha256

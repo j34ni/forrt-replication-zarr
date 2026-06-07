@@ -36,8 +36,9 @@ from harness.backends import (
 )
 from harness.faults import (
     f1_icechunk, f1_stac_b0, f1_stac_b1,
-    f2_stac_b0, f2_stac_b1,
+    f2_icechunk, f2_stac_b0, f2_stac_b1,
     f3_icechunk, f3_stac_b0, f3_stac_b1,
+    f4_icechunk_racing_writers,
 )
 
 
@@ -82,9 +83,10 @@ def run_local_trials(n_trials: int, seed: int = 42) -> list[dict]:
             # F2 — crash after metadata, before data
             rows.append({
                 "scenario": "F2", "backend": "local", "system": "icechunk",
-                "trial": trial, "inconsistent": False,
+                "trial": trial,
+                "inconsistent": f2_icechunk(local_icechunk_repo(str(base / "ic_f2")), rng),
                 "pre_sweep_inconsistent": None, "post_sweep_inconsistent": None,
-                "notes": "not applicable — single-session atomicity prevents F2 by construction",
+                "notes": "F2-state measured: is committed metadata ever ahead of committed data after an abandoned session? (expected False — Icechunk co-commits both; no metadata-before-data path exists to crash inside)",
             })
             rows.append({
                 "scenario": "F2", "backend": "local", "system": "stac_b0",
@@ -125,6 +127,19 @@ def run_local_trials(n_trials: int, seed: int = 42) -> list[dict]:
                 "notes": "write-ordering does not close F3 window; sweeper not invoked (retroactive fix cannot prevent a read that already occurred)",
             })
 
+            # F4 — concurrent racing writers (Icechunk only; the actual CAS test —
+            # see harness/faults.py for why F1-F3 don't exercise conditional writes)
+            ic_repo_f4 = local_icechunk_repo(str(base / "ic_f4"))
+            f4_result = f4_icechunk_racing_writers(ic_repo_f4, rng)
+            rows.append({
+                "scenario": "F4", "backend": "local", "system": "icechunk",
+                "trial": trial,
+                "inconsistent": f4_result["inconsistent"],
+                "pre_sweep_inconsistent": None, "post_sweep_inconsistent": None,
+                "conflict_rejected": f4_result["conflict_rejected"],
+                "notes": "positive control for conditional-write/CAS guarantee: conflict_rejected expected True (stale-tip commit raises icechunk.ConflictError); inconsistent expected False regardless of which writer wins",
+            })
+
     return rows
 
 
@@ -159,12 +174,14 @@ def run_minio_icechunk_trials(n_trials: int, run_id: str, seed: int = 42) -> lis
             "notes": "",
         })
 
-        # F2 — not applicable (same reasoning as local)
+        # F2 — measured, not asserted (same reasoning as local)
+        repo_f2 = minio_icechunk_repo(f"{trial_prefix}/f2")
         rows.append({
             "scenario": "F2", "backend": "minio", "system": "icechunk",
-            "trial": trial, "inconsistent": False,
+            "trial": trial,
+            "inconsistent": f2_icechunk(repo_f2, rng),
             "pre_sweep_inconsistent": None, "post_sweep_inconsistent": None,
-            "notes": "not applicable — single-session atomicity prevents F2 by construction",
+            "notes": "F2-state measured: is committed metadata ever ahead of committed data after an abandoned session? (expected False — Icechunk co-commits both; no metadata-before-data path exists to crash inside)",
         })
 
         # F3
@@ -175,6 +192,20 @@ def run_minio_icechunk_trials(n_trials: int, run_id: str, seed: int = 42) -> lis
             "inconsistent": f3_icechunk(repo_f3, rng),
             "pre_sweep_inconsistent": None, "post_sweep_inconsistent": None,
             "notes": "",
+        })
+
+        # F4 — concurrent racing writers: the actual conditional-write/CAS test.
+        # This is THE scenario that justifies running on a real object store —
+        # see harness/faults.py for why F1-F3 pass on any backend regardless of CAS.
+        repo_f4 = minio_icechunk_repo(f"{trial_prefix}/f4")
+        f4_result = f4_icechunk_racing_writers(repo_f4, rng)
+        rows.append({
+            "scenario": "F4", "backend": "minio", "system": "icechunk",
+            "trial": trial,
+            "inconsistent": f4_result["inconsistent"],
+            "pre_sweep_inconsistent": None, "post_sweep_inconsistent": None,
+            "conflict_rejected": f4_result["conflict_rejected"],
+            "notes": "positive control for conditional-write/CAS guarantee on a real object store: conflict_rejected expected True; if False here, that is itself the headline finding (CAS did not protect the branch tip on NIRD/Sigma2)",
         })
 
         if (trial + 1) % 10 == 0:
