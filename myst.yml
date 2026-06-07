@@ -1,19 +1,19 @@
 version: 1
 project:
-  title: "forrt-replication-zarr"
+  title: "forrt-replication-zarr-consistency"
   authors:
     - name: "Jean Iaquinta"
       orcid: "https://orcid.org/0000-0002-8763-1643"
       affiliations:
         - "VitenHub AS (Norway)"
-  github: https://github.com/j34ni/forrt-replication-zarr
+  github: https://github.com/j34ni/forrt-replication-zarr-consistency
   license: MIT
   toc:
     - file: index.md
     - file: notebooks/01_atomic_sync.ipynb
     - file: nanopubs/README.md
 site:
-  title: "forrt-replication-zarr"
+  title: "forrt-replication-zarr-consistency"
 # IMPORTANT: do NOT set base_url here — MyST silently ignores the key.
 # BASE_URL is set in .github/workflows/jupyter-book.yml as an env var on the
 # `myst build` step, derived from the GitHub repo name. See

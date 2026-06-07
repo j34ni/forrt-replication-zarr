@@ -1,13 +1,13 @@
 {
   "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
   "@type": "SoftwareSourceCode",
-  "name": "forrt-replication-zarr",
+  "name": "forrt-replication-zarr-consistency",
   "description": "Fault-injection replication testing whether Icechunk-backed transactional Zarr stores eliminate the metadata-data inconsistencies that affect disconnected STAC-style metadata indexes over object storage, including a positive control for the conditional-write/CAS guarantee on a real S3-compatible object store (NIRD/Sigma2).",
   "version": "0.1.0",
   "dateCreated": "{{RELEASE_DATE}}",
   "dateModified": "{{RELEASE_DATE}}",
   "license": "https://spdx.org/licenses/MIT",
-  "codeRepository": "https://github.com/j34ni/forrt-replication-zarr",
+  "codeRepository": "https://github.com/j34ni/forrt-replication-zarr-consistency",
   "identifier": "{{ZENODO_DOI}}",
   "@id": "{{ZENODO_DOI}}",
   "programmingLanguage": {

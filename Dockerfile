@@ -1,7 +1,7 @@
 FROM ghcr.io/prefix-dev/pixi:0.68.1
 
-LABEL org.opencontainers.image.source="https://github.com/j34ni/forrt-replication-zarr"
-LABEL org.opencontainers.image.description="Replication study container for forrt-replication-zarr"
+LABEL org.opencontainers.image.source="https://github.com/j34ni/forrt-replication-zarr-consistency"
+LABEL org.opencontainers.image.description="Replication study container for forrt-replication-zarr-consistency"
 LABEL org.opencontainers.image.licenses="MIT"
 
 WORKDIR /app
@@ -14,7 +14,7 @@ RUN pixi install --locked
 COPY . /app
 
 # Mount any required credentials at runtime, e.g.:
-#   docker run -v ~/.cdsapirc:/home/mambauser/.cdsapirc forrt-replication-zarr
+#   docker run -v ~/.cdsapirc:/home/mambauser/.cdsapirc forrt-replication-zarr-consistency
 # See data/README.md for per-dataset credential setup.
 
 CMD ["pixi", "run", "snakemake", "--cores", "1"]

@@ -56,7 +56,7 @@ TBD — paste Study URI after publishing step 04
 ### Repository URL (text input, required)
 
 ```
-https://github.com/j34ni/forrt-replication-zarr
+https://github.com/j34ni/forrt-replication-zarr-consistency
 ```
 
 ### Completion date (date picker, required)

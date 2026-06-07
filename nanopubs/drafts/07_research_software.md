@@ -20,7 +20,7 @@
 Zenodo concept DOI URL once minted (Phase 4); use GitHub URL until then.
 
 ```
-https://github.com/j34ni/forrt-replication-zarr
+https://github.com/j34ni/forrt-replication-zarr-consistency
 ```
 
 > Update to `https://doi.org/<zenodo-concept-doi>` after Phase 4 release.
@@ -34,7 +34,7 @@ zarr-icechunk-atomicity-harness — fault-injection consistency test suite for I
 ### Repository URL (text input, required)
 
 ```
-https://github.com/j34ni/forrt-replication-zarr
+https://github.com/j34ni/forrt-replication-zarr-consistency
 ```
 
 ### Research Project (text input, optional)

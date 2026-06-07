@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: "forrt-replication-zarr"
+title: "forrt-replication-zarr-consistency"
 message: "If you use this software, please cite it as below."
 type: software
 authors:
@@ -7,7 +7,7 @@ authors:
     given-names: "Jean"
     orcid: "https://orcid.org/0000-0002-8763-1643"
     affiliation: "VitenHub AS (Norway)"
-repository-code: "https://github.com/j34ni/forrt-replication-zarr"
+repository-code: "https://github.com/j34ni/forrt-replication-zarr-consistency"
 license: MIT
 version: "0.1.0"
 date-released: "{{RELEASE_DATE}}"
