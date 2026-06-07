@@ -41,6 +41,17 @@ read the results figure, and the technical replication design — is in
 [`notebooks/01_atomic_sync.py`](notebooks/01_atomic_sync.py) (rendered as the first
 notebook in this Jupyter Book's table of contents).
 
+**Where the headline figure comes from, and why you might see two versions of it:**
+that same notebook is what produces it. As rendered in this book, it ran without
+object-store credentials, so it shows three panels — the locally-reproducible
+scenarios F1-F3 — saved to `figures/main_result_local_only.png`. The fourth panel —
+the NIRD/Sigma2 object-store run that the "confirmed it holds on NIRD/Sigma2" claim
+above actually rests on — only appears when the notebook is run with `MINIO_*`
+credentials for a real S3-compatible endpoint (see `data/README.md` for how to set
+those up; never paste them into a chat session). That full 4-panel run is the one
+committed at `figures/main_result.png` and described in
+[`nanopubs/drafts/05_outcome.md`](nanopubs/drafts/05_outcome.md).
+
 ---
 
 > **Replication framing:** does Icechunk's atomic metadata+data commit eliminate the
