@@ -29,15 +29,17 @@
 >    required before re-upgrading. This draft now reflects that upgrade — to Validated /
 >    HighConfidence / `confirms` — grounded specifically in F4, not in F1-F3.
 >
-> **Where the headline figure comes from:** the 4-panel figure summarising all of the
-> numbers below — F1-F3 on the local-filesystem backend plus the F4 positive control on
-> NIRD/Sigma2 — is committed at `figures/main_result.png` and is produced by
-> `notebooks/01_atomic_sync.py`. That notebook only renders the full 4-panel version (and
-> only overwrites that file) when it is run with live `MINIO_*` credentials for a real
-> S3-compatible endpoint (see `data/README.md`); run without them — as it is in this
-> repo's published Jupyter Book — it renders just the three locally-reproducible panels
-> (F1-F3) to a separate `figures/main_result_local_only.png`, so a credential-less run can
-> never silently overwrite the NIRD/Sigma2 evidence this Outcome rests on.
+> **The headline figure — all four panels, the evidence this Outcome rests on:**
+>
+> ![Metadata–data inconsistency under fault injection — Icechunk vs STAC, across F1-F4 on both a local filesystem and a real NIRD/Sigma2 S3-compatible object store. Icechunk stays at zero in every panel; both STAC variants land at N (every trial inconsistent) wherever they're exercised.](../../figures/main_result.png)
+>
+> It's committed at `figures/main_result.png` and produced by
+> `notebooks/01_atomic_sync.py`. That notebook only renders this full 4-panel version
+> (and only overwrites that file) when it is run with live `MINIO_*` credentials for a
+> real S3-compatible endpoint (see `data/README.md`); run without them — as it is in
+> this repo's published Jupyter Book — it renders just the three locally-reproducible
+> panels (F1-F3) to a separate `figures/main_result_local_only.png`, so a
+> credential-less run can never silently overwrite the NIRD/Sigma2 evidence above.
 
 ---
 

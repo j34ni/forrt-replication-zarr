@@ -41,15 +41,21 @@ read the results figure, and the technical replication design — is in
 [`notebooks/01_atomic_sync.py`](notebooks/01_atomic_sync.py) (rendered as the first
 notebook in this Jupyter Book's table of contents).
 
-**Where the headline figure comes from, and why you might see two versions of it:**
-that same notebook is what produces it. As rendered in this book, it ran without
-object-store credentials, so it shows three panels — the locally-reproducible
-scenarios F1-F3 — saved to `figures/main_result_local_only.png`. The fourth panel —
-the NIRD/Sigma2 object-store run that the "confirmed it holds on NIRD/Sigma2" claim
-above actually rests on — only appears when the notebook is run with `MINIO_*`
-credentials for a real S3-compatible endpoint (see `data/README.md` for how to set
-those up; never paste them into a chat session). That full 4-panel run is the one
-committed at `figures/main_result.png` and described in
+**The headline result, in one figure:**
+
+![Metadata–data inconsistency under fault injection — Icechunk vs STAC, across F1-F4 on both a local filesystem and a real NIRD/Sigma2 S3-compatible object store. Icechunk stays at zero in every panel; both STAC variants land at N (every trial inconsistent) wherever they're exercised.](figures/main_result.png)
+
+**Where this figure comes from, and why you might see a different one in the notebook
+below:** that notebook, `notebooks/01_atomic_sync.py`, is what produces it — but the
+4-panel version above (panels 1-3 on the local filesystem, panel 4 the NIRD/Sigma2
+object-store run that the "confirmed it holds on NIRD/Sigma2" claim rests on) only
+renders when the notebook is run with live `MINIO_*` credentials for a real
+S3-compatible endpoint (see `data/README.md` for how to set those up; never paste them
+into a chat session). As rendered in this book, the notebook ran without those
+credentials, so its own output below shows only the three locally-reproducible panels
+(F1-F3, saved separately to `figures/main_result_local_only.png` so a credential-less
+run can never overwrite the evidence above). The figure above is the one committed at
+`figures/main_result.png`, described in full in
 [`nanopubs/drafts/05_outcome.md`](nanopubs/drafts/05_outcome.md).
 
 ---
