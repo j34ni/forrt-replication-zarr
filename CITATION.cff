@@ -11,12 +11,10 @@ repository-code: "https://github.com/j34ni/forrt-replication-zarr-consistency"
 license: MIT
 version: "0.1.0"
 date-released: "2026-06-08"
-# After your first GitHub release the Zenodo integration mints a concept DOI.
-# Replace this once available (run /init-template again or edit by hand):
-doi: "{{ZENODO_DOI}}"
+doi: "10.5281/zenodo.20596857"
 identifiers:
   - type: doi
-    value: "{{ZENODO_DOI}}"
+    value: "10.5281/zenodo.20596857"
     description: "Concept DOI (resolves to the latest version)"
 keywords:
   - replication

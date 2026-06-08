@@ -104,5 +104,5 @@ The published chain is listed in [`nanopubs/PUBLISHED.md`](nanopubs/PUBLISHED.md
 
 If you use this work, please cite both:
 
-- This software: [`CITATION.cff`](CITATION.cff) → DOI [{{ZENODO_DOI}}]({{ZENODO_DOI}}).
+- This software: [`CITATION.cff`](CITATION.cff) → DOI [10.5281/zenodo.20596857](https://doi.org/10.5281/zenodo.20596857).
 - The primary source (no DOI — a GitHub README, not a publication): [`zarr-datafusion-search`](https://github.com/developmentseed/zarr-datafusion-search) by Development Seed.

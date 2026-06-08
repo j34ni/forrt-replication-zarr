@@ -2,6 +2,12 @@
 
 This file is the canonical registry of published nanopub URIs for this replication. Update it as you publish each step.
 
+## Software archive
+
+| Artefact | DOI | Released |
+|---|---|---|
+| Source code (`v0.1.0`, concept DOI — resolves to latest version) | [10.5281/zenodo.20596857](https://doi.org/10.5281/zenodo.20596857) | 2026-06-08 |
+
 ## Chain
 
 | Step | Template | URI | Published |

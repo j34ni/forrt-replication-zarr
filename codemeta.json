@@ -8,8 +8,8 @@
   "dateModified": "2026-06-08",
   "license": "https://spdx.org/licenses/MIT",
   "codeRepository": "https://github.com/j34ni/forrt-replication-zarr-consistency",
-  "identifier": "{{ZENODO_DOI}}",
-  "@id": "{{ZENODO_DOI}}",
+  "identifier": "https://doi.org/10.5281/zenodo.20596857",
+  "@id": "https://doi.org/10.5281/zenodo.20596857",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "Python",
