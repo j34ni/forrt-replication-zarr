@@ -28,13 +28,10 @@
         { "@id": "pixi.toml" },
         { "@id": "pixi.lock" },
         { "@id": "Dockerfile" },
-        { "@id": "notebooks/01_data_download.py" },
-        { "@id": "notebooks/02_data_clean.py" },
-        { "@id": "notebooks/03_analysis.py" },
-        { "@id": "notebooks/04_figures.py" },
+        { "@id": "notebooks/01_atomic_sync.py" },
+        { "@id": "harness/" },
         { "@id": "paper/" },
         { "@id": "data/" },
-        { "@id": "results/" },
         { "@id": "figures/" },
         { "@id": "nanopubs/PUBLISHED.md" }
       ],
@@ -52,10 +49,10 @@
       "@id": "Snakefile",
       "@type": ["File", "SoftwareSourceCode", "ComputationalWorkflow"],
       "name": "Replication pipeline",
-      "description": "Snakemake workflow orchestrating data download, cleaning, analysis, and figure generation.",
+      "description": "Snakemake workflow running the fault-injection harness (no external dataset — synthetic Zarr arrays are generated and faults injected against Icechunk- and STAC-backed stores) and rendering the comparison figure.",
       "programmingLanguage": { "@id": "https://w3id.org/workflowhub/workflow-ro-crate#snakemake" },
-      "input": [{ "@id": "paper/" }, { "@id": "pixi.toml" }, { "@id": "pixi.lock" }],
-      "output": [{ "@id": "results/" }, { "@id": "figures/" }, { "@id": "nanopubs/PUBLISHED.md" }]
+      "input": [{ "@id": "harness/" }, { "@id": "pixi.toml" }, { "@id": "pixi.lock" }],
+      "output": [{ "@id": "data/" }, { "@id": "figures/" }]
     },
     {
       "@id": "https://w3id.org/workflowhub/workflow-ro-crate#snakemake",
@@ -82,28 +79,17 @@
       "encodingFormat": "text/x-dockerfile"
     },
     {
-      "@id": "notebooks/01_data_download.py",
+      "@id": "notebooks/01_atomic_sync.py",
       "@type": ["File", "SoftwareSourceCode", "Notebook"],
-      "name": "01 — Data download",
+      "name": "01 — Atomic synchronization fault-injection matrix and figure",
+      "description": "Runs the F1-F4 fault matrix across Icechunk and STAC-style backends (via harness.run_matrix.run_all), writes data/results/results.parquet, and renders figures/main_result.png.",
       "programmingLanguage": "Python"
     },
     {
-      "@id": "notebooks/02_data_clean.py",
-      "@type": ["File", "SoftwareSourceCode", "Notebook"],
-      "name": "02 — Data clean",
-      "programmingLanguage": "Python"
-    },
-    {
-      "@id": "notebooks/03_analysis.py",
-      "@type": ["File", "SoftwareSourceCode", "Notebook"],
-      "name": "03 — Analysis",
-      "programmingLanguage": "Python"
-    },
-    {
-      "@id": "notebooks/04_figures.py",
-      "@type": ["File", "SoftwareSourceCode", "Notebook"],
-      "name": "04 — Figures",
-      "programmingLanguage": "Python"
+      "@id": "harness/",
+      "@type": ["Dataset", "SoftwareSourceCode"],
+      "name": "Fault-injection harness",
+      "description": "Python package implementing the F1-F4 fault scenarios (faults.py), the Icechunk and STAC baseline backends (baseline_icechunk.py, baseline_stac.py, backends.py), the consistency invariant checker (invariant.py), and the matrix runner (run_matrix.py). Invoked from notebooks/01_atomic_sync.py."
     },
     {
       "@id": "paper/",
@@ -113,12 +99,8 @@
     {
       "@id": "data/",
       "@type": "Dataset",
-      "name": "Downloaded input data (gitignored; populated by 01_data_download.py)"
-    },
-    {
-      "@id": "results/",
-      "@type": "Dataset",
-      "name": "Analysis output artefacts"
+      "name": "Generated results (gitignored)",
+      "description": "Results table (data/results/results.parquet) produced by the fault-injection harness. There is no external dataset to download — see data/README.md for why — and these files are never committed (.gitignore keeps only data/README.md and data/.gitkeep)."
     },
     {
       "@id": "figures/",
